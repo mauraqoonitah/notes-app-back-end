@@ -119,6 +119,34 @@ const editNoteByIdHandler = (request, h) => {
     return response;
 };
 
+// handler delete notes
+const deleteNoteByIdHandler = (request, h) => {
+    const { id } = request.params;
+
+    // mendapatkan index dari objek notes sesuai dengan id
+    const index = notes.findIndex((note) => note.id === id);
+
+    // pengecekan terhadap nilai index
+    // pastikan nilainya tidak -1
+    if (index !== -1) {
+        notes.splice(index, 1);
+
+        const response = h.response({
+            status: 'success',
+            message: 'Catatan berhasil dihapus',
+        });
+        response.code(200);
+        return response;
+    }
+
+    const response = h.response({
+        status: 'fail',
+        message: 'Catatan gagal dihapus. Id tidak ditemukan',
+    });
+    response.code(404);
+    return response;
+};
+
 // menggunakan objek literals
 // untuk memudahkan ekspor lebih dari satu nilai pada satu berkas JavaScript.
 module.exports = {
@@ -126,4 +154,5 @@ module.exports = {
     getAllNotesHandler,
     getNoteByIdHandler,
     editNoteByIdHandler,
+    deleteNoteByIdHandler,
 };
