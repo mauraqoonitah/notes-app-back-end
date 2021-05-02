@@ -46,7 +46,40 @@ const addNoteHandler = (request, h) => {
     return response;
 };
 
+// mendapatkan seluruh notes
+const getAllNotesHandler = () => ({
+    status: 'success',
+    data: {
+        notes,
+    },
+});
+
+// mendapatkan notes berdasarkan id
+const getNoteByIdHandler = (request, h) => {
+    // eslint-disable-next-line max-len
+    // mengembalikan objek catatan secara spesifik berdasarkan id yang digunakan oleh path parameter.
+    const { id } = request.params;
+
+    // mendapatkan objek note dengan id tsb dari objek array notes
+    // menggunakan method array filter() utk get objek
+    const note = notes.filter((n) => n.id === id)[0];
+
+    if (note !== undefined) {
+        return {
+            status: 'success',
+            data: {
+                note,
+            },
+        };
+    }
+    const response = h.response({
+        status: 'fail',
+        message: 'Catatan tidak ditemukan',
+    });
+    response.code(404);
+    return response;
+};
+
 // menggunakan objek literals
 // untuk memudahkan ekspor lebih dari satu nilai pada satu berkas JavaScript.
-
-module.exports = { addNoteHandler };
+module.exports = { addNoteHandler, getAllNotesHandler, getNoteByIdHandler };
