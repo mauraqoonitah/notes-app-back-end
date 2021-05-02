@@ -1,6 +1,7 @@
 const { nanoid } = require('nanoid');
 const notes = require('./notes');
 
+// handler menambahkan notes
 const addNoteHandler = (request, h) => {
     const { title, tags, body } = request.payload;
 
@@ -46,7 +47,7 @@ const addNoteHandler = (request, h) => {
     return response;
 };
 
-// mendapatkan seluruh notes
+// handler mendapatkan seluruh notes
 const getAllNotesHandler = () => ({
     status: 'success',
     data: {
@@ -54,7 +55,7 @@ const getAllNotesHandler = () => ({
     },
 });
 
-// mendapatkan notes berdasarkan id
+// handler mendapatkan notes berdasarkan id
 const getNoteByIdHandler = (request, h) => {
     // eslint-disable-next-line max-len
     // mengembalikan objek catatan secara spesifik berdasarkan id yang digunakan oleh path parameter.
@@ -80,6 +81,49 @@ const getNoteByIdHandler = (request, h) => {
     return response;
 };
 
+// handler edit notes
+const editNoteByIdHandler = (request, h) => {
+    const { id } = request.params;
+
+    // mendapatkan data notes terbaru yang dikirimkan client melalui body request
+    const { title, tags, body } = request.payload;
+
+    // perbarui properti updatedAt
+    const updatedAt = new Date().toISOString();
+
+    // mengubah catatan lama dengan data terbaru dengan indexing array
+    const index = notes.findIndex((note) => note.id === id);
+
+    // bila id tidak ditemukan, maka index bernilai -1
+    if (index !== -1) {
+        notes[index] = {
+            ...notes[index],
+            title,
+            tags,
+            body,
+            updatedAt,
+        };
+
+        const response = h.response({
+            status: 'success',
+            message: 'Catatan berhasil diperbarui',
+        });
+        response.code(200);
+        return response;
+    }
+    const response = h.response({
+        status: 'fail',
+        message: 'Gagal memperbarui catatan. Id tidak ditemukan',
+    });
+    response.code(404);
+    return response;
+};
+
 // menggunakan objek literals
 // untuk memudahkan ekspor lebih dari satu nilai pada satu berkas JavaScript.
-module.exports = { addNoteHandler, getAllNotesHandler, getNoteByIdHandler };
+module.exports = {
+    addNoteHandler,
+    getAllNotesHandler,
+    getNoteByIdHandler,
+    editNoteByIdHandler,
+};
